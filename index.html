@@ -23,17 +23,17 @@ h1 {
 }
 
 post-button {
-  float: right;
+float: right;
   background-color: white;
   color: brown;
 }
 
 content {
-  margin: 20px;
+margin: 20px;
 }
 
 post-textbox {
-  width: 100%;
+width: 100%;
   height: 100px;
   resize: none;
   background-color: white;
@@ -41,19 +41,19 @@ post-textbox {
 }
 
 post-textbox:read-only {
-  background-color: #f2f2f2;
+background-color: #f2f2f2;
   border: none;
 }
 
 login-form {
-  padding: 10px;
+padding: 10px;
   text-align: center;
   background-color: #f2f2f2;
   margin-bottom: 20px;
 }
 
 login-input {
-  margin-right: 10px;
+margin-right: 10px;
   background-color: white;
   color: brown;
 }
@@ -81,9 +81,9 @@ button {
     var posts = JSON.parse(localStorage.getItem("posts")) || [];
 
 // Load existing posts from Local Storage
-for (var i = 0; i < posts.length; i++) {
-  createPostElement(posts[i].user, posts[i].content);
-}
+posts.forEach(function(post) {
+  createPostElement(post.user, post.content);
+});
 
 function login() {
   var username = document.getElementById("login-input").value.trim();
@@ -117,6 +117,18 @@ function savePost() {
 // Save post to Local Storage
 posts.push({ user: loggedInUser, content: content });
 localStorage.setItem("posts", JSON.stringify(posts));
+
+// Send post to server
+fetch('https://fartpost.github.io/FartPost/', {
+  method: 'POST',
+  body: JSON.stringify({ user: loggedInUser, content: content }),
+  headers: {
+    'Content-Type': 'application/json'
+  }
+})
+.then(response => response.json())
+.then(data => console.log(data))
+.catch(error => console.error(error));
 }
 }
 

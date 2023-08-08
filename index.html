@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+<html>
 <head>
   <meta charset="UTF-8">
   <title>FartPost</title>
@@ -10,58 +12,58 @@
       color: white;
     }
 
-header {
-  background-color: brown;
-  padding: 10px;
-}
+    header {
+      background-color: brown;
+      padding: 10px;
+    }
 
-h1 {
-  margin: 0;
-  text-align: center;
-  color: white;
-}
+    h1 {
+      margin: 0;
+      text-align: center;
+      color: white;
+    }
 
-post-button {
-float: right;
-  background-color: white;
-  color: brown;
-}
+    #post-button {
+      float: right;
+      background-color: white;
+      color: brown;
+    }
 
-content {
-margin: 20px;
-}
+    #content {
+      margin: 20px;
+    }
 
-post-textbox {
-width: 100%;
-  height: 100px;
-  resize: none;
-  background-color: white;
-  color: brown;
-}
+    #post-textbox {
+      width: 100%;
+      height: 100px;
+      resize: none;
+      background-color: white;
+      color: brown;
+    }
 
-post-textbox:read-only {
-background-color: #f2f2f2;
-  border: none;
-}
+    #post-textbox:read-only {
+      background-color: #f2f2f2;
+      border: none;
+    }
 
-login-form {
-padding: 10px;
-  text-align: center;
-  background-color: #f2f2f2;
-  margin-bottom: 20px;
-}
+    #login-form {
+      padding: 10px;
+      text-align: center;
+      background-color: #f2f2f2;
+      margin-bottom: 20px;
+    }
 
-login-input {
-margin-right: 10px;
-  background-color: white;
-  color: brown;
-}
+    #login-input {
+      margin-right: 10px;
+      background-color: white;
+      color: brown;
+    }
 
-button {
-  background-color: white;
-  color: brown;
-}
-</style>
+    button {
+      background-color: white;
+      color: brown;
+    }
+  </style>
 </head>
 
 <body>
@@ -75,60 +77,71 @@ button {
   </header>
   <div id="content"></div>
 
-<script>
+  <div id="post-textbox-container"></div>
+
+  <script>
     var loggedInUser = "";
     var posts = JSON.parse(localStorage.getItem("posts")) || [];
 
-// Load existing posts from Local Storage
-posts.forEach(function(post) {
-  createPostElement(post.user, post.content);
-});
+    posts.forEach(function(post) {
+      createPostElement(post.user, post.content);
+    });
 
-function login() {
-  var username = document.getElementById("login-input").value.trim();
-  if (username !== "") {
-    loggedInUser = username;
-    document.getElementById("login-form").style.display = "none";
-    document.getElementById("post-button").disabled = false;
-  }
-}
-
-function savePost() {
-  var textbox = document.getElementById("post-textbox");
-  var content = textbox.value.trim();
-  if (content !== "") {
-    textbox.parentNode.removeChild(textbox);
-    createPostElement(loggedInUser, content);
-
-// Save post to Local Storage
-posts.push({ user: loggedInUser, content: content });
-localStorage.setItem("posts", JSON.stringify(posts));
-}
-}
-
-function openPostBox() {
-  var textbox = document.createElement("textarea");
-  textbox.id = "post-textbox";
-  textbox.onkeypress = function(e) {
-    if (e.keyCode === 13) { // Enter key code
-      e.preventDefault();
-      savePost();
+    function login() {
+      var username = document.getElementById("login-input").value.trim();
+      if (username !== "") {
+        loggedInUser = username;
+        document.getElementById("login-form").style.display = "none";
+        document.getElementById("post-button").disabled = false;
+      }
     }
-  };
-  document.getElementById("content").appendChild(textbox);
-  textbox.focus();
-}
 
-function createPostElement(user, content) {
-  var post = document.createElement("div");
-  var userElement = document.createElement("p");
-  userElement.innerText = user;
-  post.appendChild(userElement);
-  var postContent = document.createElement("p");
-  postContent.innerText = content;
-  post.appendChild(postContent);
-  document.getElementById("content").appendChild(post);
-}
-</script>
+    function savePost() {
+      var textbox = document.getElementById("post-textbox");
+      var content = textbox.value.trim();
+      if (content !== "") {
+        textbox.parentNode.removeChild(textbox);
+        createPostElement(loggedInUser, content);
+
+        posts.push({ user: loggedInUser, content: content });
+        localStorage.setItem("posts", JSON.stringify(posts));
+      }
+    }
+
+    function openPostBox() {
+      var textbox = document.createElement("textarea");
+      textbox.id = "post-textbox";
+      textbox.addEventListener("keyup", function(event) {
+        event.preventDefault();
+        if (event.keyCode === 13) {
+          document.getElementById("post-button").click();
+        }
+      });
+
+      var cancelButton = document.createElement("button");
+      cancelButton.innerText = "Cancel";
+      cancelButton.addEventListener("click", function(event) {
+        document.getElementById("post-textbox-container").innerHTML = "";
+        document.getElementById("post-button").disabled = false;
+      });
+
+      document.getElementById("post-textbox-container").innerHTML = "";
+      document.getElementById("post-textbox-container").appendChild(textbox);
+      document.getElementById("post-textbox-container").appendChild(cancelButton);
+
+      textbox.focus();
+    }
+
+    function createPostElement(user, content) {
+      var post = document.createElement("div");
+      var userElement = document.createElement("p");
+      userElement.innerText = user;
+      post.appendChild(userElement);
+      var postContent = document.createElement("p");
+      postContent.innerText = content;
+      post.appendChild(postContent);
+      document.getElementById("content").appendChild(post);
+    }
+  </script>
 </body>
 </html>

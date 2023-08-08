@@ -73,9 +73,12 @@
       <input type="text" id="login-input" placeholder="Username" style="background-color: white; color: brown;">
       <button onclick="login()" style="background-color: white; color: brown;">Login/Signup</button>
     </div>
-    <button id="post-button" onclick="savePost()" disabled>Post</button>
+    <button id="post-button" onclick="openPostBox()" disabled>Post</button> <!-- Added onclick event to open the post text box -->
   </header>
   <div id="content"></div>
+
+  <!-- Added a new div to hold the post text box -->
+  <div id="post-textbox-container"></div>
 
   <script>
     var loggedInUser = "";
@@ -108,16 +111,30 @@
       }
     }
 
+    // Added a new function to open the post text box
     function openPostBox() {
       var textbox = document.createElement("textarea");
       textbox.id = "post-textbox";
-      textbox.onkeypress = function(e) {
-        if (e.keyCode === 13) { // Enter key code
-          e.preventDefault();
-          savePost();
+      textbox.addEventListener("keyup", function(event) {
+        event.preventDefault();
+        if (event.keyCode === 13) {
+          document.getElementById("post-button").click(); // Trigger savePost function when Enter key is pressed
         }
-      };
-      document.getElementById("content").appendChild(textbox);
+      });
+
+      // Added a new cancel button to discard the post
+      var cancelButton = document.createElement("button");
+      cancelButton.innerText = "Cancel";
+      cancelButton.addEventListener("click", function(event) {
+        document.getElementById("post-textbox-container").innerHTML = ""; // Clear the container
+        document.getElementById("post-button").disabled = false; // Enable post button
+      });
+
+      // Added the new elements to the container
+      document.getElementById("post-textbox-container").innerHTML = "";
+      document.getElementById("post-textbox-container").appendChild(textbox);
+      document.getElementById("post-textbox-container").appendChild(cancelButton);
+
       textbox.focus();
     }
 

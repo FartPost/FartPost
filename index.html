@@ -1,4 +1,3 @@
-<html>
 <head>
   <meta charset="UTF-8">
   <title>FartPost</title>
@@ -72,7 +71,7 @@ button {
       <input type="text" id="login-input" placeholder="Username" style="background-color: white; color: brown;">
       <button onclick="login()" style="background-color: white; color: brown;">Login/Signup</button>
     </div>
-    <button id="post-button" onclick="openPostBox()" disabled>Post</button>
+    <button id="post-button" onclick="savePost()" disabled>Post</button>
   </header>
   <div id="content"></div>
 
@@ -94,6 +93,19 @@ function login() {
   }
 }
 
+function savePost() {
+  var textbox = document.getElementById("post-textbox");
+  var content = textbox.value.trim();
+  if (content !== "") {
+    textbox.parentNode.removeChild(textbox);
+    createPostElement(loggedInUser, content);
+
+    // Save post to Local Storage
+    posts.push({ user: loggedInUser, content: content });
+    localStorage.setItem("posts", JSON.stringify(posts));
+  }
+}
+
 function openPostBox() {
   var textbox = document.createElement("textarea");
   textbox.id = "post-textbox";
@@ -105,31 +117,6 @@ function openPostBox() {
   };
   document.getElementById("content").appendChild(textbox);
   textbox.focus();
-}
-
-function savePost() {
-  var textbox = document.getElementById("post-textbox");
-  var content = textbox.value.trim();
-  if (content !== "") {
-    textbox.parentNode.removeChild(textbox);
-    createPostElement(loggedInUser, content);
-
-// Save post to Local Storage
-posts.push({ user: loggedInUser, content: content });
-localStorage.setItem("posts", JSON.stringify(posts));
-
-// Send post to server
-fetch('https://fartpost.github.io/FartPost/', {
-  method: 'POST',
-  body: JSON.stringify({ user: loggedInUser, content: content }),
-  headers: {
-    'Content-Type': 'application/json'
-  }
-})
-.then(response => response.json())
-.then(data => console.log(data))
-.catch(error => console.error(error));
-}
 }
 
 function createPostElement(user, content) {
